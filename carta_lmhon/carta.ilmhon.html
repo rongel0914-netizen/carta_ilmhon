@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carpeta - Fundación ilmhon</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+  body{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:50px 8px 20px;gap:12px;overflow-x:hidden;
+    background:linear-gradient(135deg,#4B1E7A 0%, #7B2FBF 30%, #F47A20 65%, #2E9E4F 100%);
+  }
+  .escena{position:relative;width:560px;max-width:88vw;aspect-ratio:3/4.2;height:auto;z-index:2;overflow:visible}
+  .carpeta{
+    position:absolute;inset:0;background-color:white;
+    background-image:url('img/fundacion.jpg');
+    background-size:contain;background-position:center;background-repeat:no-repeat;
+    box-shadow:0 25px 60px rgba(0,0,0,.45);border-radius:8px;z-index:2;
+  }
+  .tabs-top{position:absolute;left:50%;transform:translateX(-50%);top:-38px;z-index:1;display:flex;flex-direction:row;justify-content:center;gap:8px;width:max-content;max-width:100%}
+  .tab-top{width:150px;height:38px;border-radius:12px 12px 0 0;cursor:pointer;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:4px -2px 12px rgba(0,0,0,.3);text-align:center;padding:0 8px;color:white}
+  .tab-top.c-morado{background:#4B1E7A}
+  .tab-top.c-naranja{background:#F47A20}
+  .tab-top:hover{transform:translateY(-3px)}
+  .tab-top.activa{outline:3px solid white;outline-offset:-3px;transform:translateY(-3px)}
+  .tabs{position:absolute;left:calc(100% - 14px);top:16px;z-index:1;display:flex;flex-direction:column;gap:8px}
+  .tab{width:58px;height:108px;border-radius:0 16px 16px 0;cursor:pointer;writing-mode:vertical-rl;font-weight:900;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:4px 4px 12px rgba(0,0,0,.4);text-align:center;color:#222}
+  .tab.c-amarillo{background:#FFD700;color:#4B1E7A}
+  .tab.c-verde{background:#2E9E4F;color:white}
+  .tab.c-lila{background:#7B2FBF;color:white}
+  .tab:hover{transform:translateX(4px)}
+  .tab.activa{outline:3px solid white;outline-offset:-3px}
+  .tab-larga{height:150px;font-size:14px;letter-spacing:.5px}
+  .hoja{position:absolute;top:15px;left:12px;right:12px;bottom:15px;background:#FFF8E1;z-index:3;border-radius:8px;box-shadow:0 15px 40px rgba(0,0,0,.35);padding:0;transform:scale(.95);opacity:0;pointer-events:none;transition:.45s;overflow:auto}
+  .hoja.visible{transform:scale(1);opacity:1;pointer-events:auto;z-index:30}
+  .cerrar{position:absolute;top:8px;right:10px;border:none;background:white;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;z-index:50;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .hoja-inner{padding:0 20px 18px}
+  .cabecera-hoja{background:#4B1E7A;color:white;padding:18px 20px 14px;border-bottom:4px solid #F47A20}
+  .cabecera-hoja h2{font-size:22px;line-height:1.1}
+  .cabecera-hoja p{font-size:12.5px;opacity:.9;margin-top:4px}
+  .cabecera-hoja .anio{float:right;font-size:13px;font-weight:900;opacity:.9}
+  .seccion{background:#4B1E7A;color:white;font-weight:900;font-size:13.5px;padding:7px 12px;border-radius:20px;margin:16px 0 8px;letter-spacing:.5px}
+  .seccion.naranja{background:#F47A20}
+  .seccion.verde{background:#2E9E4F}
+  .seccion.verde-claro{background:#7CB342}
+  .hoja p{font-size:14.5px;line-height:1.55;color:#333;margin-bottom:8px}
+  .lista{list-style:none}
+  .lista li{background:white;border-left:5px solid #7B2FBF;padding:8px 10px;margin-bottom:6px;border-radius:0 8px 8px 0;font-size:14.5px;color:#333;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .lista li:nth-child(2n){border-left-color:#F47A20}
+  .lista li:nth-child(3n){border-left-color:#2E9E4F}
+  .lista li b{color:#4B1E7A}
+  .programa{background:white;border-radius:10px;padding:9px 11px;margin-bottom:7px;font-size:14.5px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .programa b{color:#4B1E7A}
+  .pie-hoja{margin:18px 20px 0;background:#4B1E7A;color:white;text-align:center;font-size:12px;padding:9px;border-radius:8px}
+  .dato{background:#EDE7F6;border:2px dashed #7B2FBF;border-radius:10px;padding:10px;font-size:14px;color:#4B1E7A;font-weight:700;margin:8px 0;text-align:center}
+  .btn-watsap{display:block;text-align:center;background:#25D366;color:white;text-decoration:none;font-weight:900;font-size:16px;padding:14px 12px;border-radius:30px;margin:14px 0 4px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+  .btn-watsap:active{transform:scale(.98)}
+  /* COLLAGE LIBRE TIPO MOODBOARD */
+  #acciones .hoja-inner{padding:12px 8px 10px;background:#FFF8E1}
+  .collage-libre{position:relative;width:100%;height:1650px}
+  .collage-libre .foto{
+    position:absolute;background:white;padding:5px;
+    box-shadow:0 5px 14px rgba(0,0,0,.3);cursor:pointer;
+    transition:transform .25s;overflow:hidden;
+  }
+  .collage-libre .foto img{width:100%;height:100%;object-fit:cover;display:block}
+  .collage-libre .foto:hover{transform:scale(1.1) rotate(0deg) !important;z-index:40 !important}
+  .f1{left:2%;top:0;width:46%;height:170px;transform:rotate(-4deg);z-index:5}
+  .f2{left:48%;top:8px;width:50%;height:140px;transform:rotate(3deg);z-index:6}
+  .f3{left:8%;top:160px;width:38%;height:125px;transform:rotate(5deg);z-index:7}
+  .f4{left:45%;top:145px;width:52%;height:180px;transform:rotate(-2deg);z-index:4}
+  .f5{left:0%;top:295px;width:60%;height:150px;transform:rotate(2deg);z-index:8}
+  .f6{left:55%;top:325px;width:42%;height:125px;transform:rotate(-5deg);z-index:9}
+  .f7{left:18%;top:440px;width:48%;height:165px;transform:rotate(-3deg);z-index:6}
+  .f8{left:62%;top:445px;width:36%;height:110px;transform:rotate(6deg);z-index:10}
+  .f9{left:2%;top:590px;width:40%;height:145px;transform:rotate(4deg);z-index:5}
+  .f10{left:40%;top:600px;width:58%;height:155px;transform:rotate(-4deg);z-index:7}
+  .f11{left:10%;top:735px;width:50%;height:130px;transform:rotate(-2deg);z-index:8}
+  .f12{left:58%;top:750px;width:40%;height:170px;transform:rotate(3deg);z-index:6}
+  .f13{left:0%;top:880px;width:55%;height:145px;transform:rotate(5deg);z-index:9}
+  .f14{left:50%;top:920px;width:48%;height:135px;transform:rotate(-6deg);z-index:10}
+  .f15{left:12%;top:1025px;width:42%;height:150px;transform:rotate(2deg);z-index:5}
+  .f16{left:55%;top:1050px;width:44%;height:120px;transform:rotate(-3deg);z-index:8}
+  .f17{left:3%;top:1170px;width:58%;height:165px;transform:rotate(-4deg);z-index:7}
+  .f18{left:58%;top:1180px;width:40%;height:135px;transform:rotate(4deg);z-index:9}
+  .f19{left:15%;top:1330px;width:48%;height:140px;transform:rotate(3deg);z-index:6}
+  .f20{left:60%;top:1335px;width:38%;height:155px;transform:rotate(-5deg);z-index:10}
+  .f21{left:2%;top:1480px;width:45%;height:130px;transform:rotate(-2deg);z-index:5}
+  .f22{left:48%;top:1490px;width:50%;height:140px;transform:rotate(4deg);z-index:8}
+  .f23{left:28%;top:70px;width:30%;height:100px;transform:rotate(10deg);z-index:15}
+  .f24{left:70%;top:250px;width:28%;height:105px;transform:rotate(-8deg);z-index:15}
+  .f25{left:5%;top:380px;width:28%;height:95px;transform:rotate(-10deg);z-index:15}
+  .f26{left:68%;top:540px;width:30%;height:110px;transform:rotate(8deg);z-index:15}
+  .f27{left:30%;top:680px;width:28%;height:95px;transform:rotate(-7deg);z-index:15}
+  .f28{left:72%;top:860px;width:28%;height:100px;transform:rotate(9deg);z-index:15}
+  .f29{left:8%;top:960px;width:28%;height:95px;transform:rotate(7deg);z-index:15}
+  .f30{left:35%;top:1110px;width:30%;height:105px;transform:rotate(-9deg);z-index:15}
+  .f31{left:70%;top:1260px;width:28%;height:95px;transform:rotate(6deg);z-index:15}
+  .f32{left:22%;top:1420px;width:30%;height:100px;transform:rotate(-6deg);z-index:15}
+  .f33{left:45%;top:200px;width:32%;height:110px;transform:rotate(12deg);z-index:16}
+  .f34{left:12%;top:520px;width:32%;height:105px;transform:rotate(-12deg);z-index:16}
+  .f35{left:60%;top:660px;width:30%;height:95px;transform:rotate(-11deg);z-index:16}
+  .f36{left:18%;top:830px;width:30%;height:105px;transform:rotate(11deg);z-index:16}
+  .f37{left:55%;top:980px;width:32%;height:100px;transform:rotate(-10deg);z-index:16}
+  .f38{left:8%;top:1100px;width:30%;height:95px;transform:rotate(8deg);z-index:16}
+  .f39{left:62%;top:1390px;width:30%;height:105px;transform:rotate(-9deg);z-index:16}
+  .f40{left:35%;top:1540px;width:32%;height:110px;transform:rotate(7deg);z-index:16}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:999}
+  .lightbox.abierto{display:flex}
+  .lightbox img{max-width:92vw;max-height:85vh;border-radius:12px;object-fit:contain}
+  .cerrar-foto{position:absolute;top:16px;right:20px;color:white;font-size:26px;font-weight:900;cursor:pointer;z-index:2}
+  .cabecera-hoja{display:flex;align-items:center;gap:10px}
+  .cabecera-hoja h2{flex:1}
+  .logo-peque{width:42px;height:42px;object-fit:cover;border-radius:50%;background:white;padding:2px;border:2px solid white;flex-shrink:0}
+  @media (max-width:600px){
+    body{padding:48px 4px 16px;gap:10px}
+    .escena{width:calc(100vw - 58px);max-width:420px;aspect-ratio:3/4.4;margin-right:18px}
+    .tabs{left:calc(100% - 10px);top:12px;gap:6px}
+    .tab{width:42px;height:88px;font-size:13px;border-radius:0 12px 12px 0}
+    .tab-larga{height:128px;font-size:12px}
+    .tabs-top{top:-34px}
+    .tab-top{width:118px;height:34px;font-size:13px}
+    .hoja{left:8px;right:8px;top:10px;bottom:10px}
+    .hoja-inner{padding:0 14px 14px}
+    #acciones .hoja-inner{padding:10px 6px}
+    .cabecera-hoja{padding:14px 14px 12px}
+    .cabecera-hoja h2{font-size:19px}
+    .collage-libre{height:1450px}
+  }
+</style>
+</head>
+<body>
+
+<div class="escena">
+  <div class="carpeta"></div>
+
+  <div class="tabs-top">
+    <div class="tab-top c-morado" onclick="abrir('ilmhon',this)">ilmhon</div>
+    <div class="tab-top c-naranja" onclick="abrir('jovenes',this)">JÓVENES</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-larga c-amarillo" onclick="abrir('am',this)">ADULTOS MAYORES</div>
+    <div class="tab c-verde" onclick="abrir('acciones',this)">ACCIONES</div>
+    <div class="tab tab-larga c-lila" onclick="abrir('voluntariado',this)">VOLUNTARIADO</div>
+  </div>
+
+  <!-- HOJA 1 - ilmhon -->
+  <div class="hoja" id="ilmhon">
+    <button class="cerrar" onclick="cerrar()">X</button>
+   <div class="cabecera-hoja">
+  <img src="img/logo.jpg" class="logo-peque">
+  <span class="anio">2026</span>
+  <h2>ilmhon</h2>
+      <p>Programas enfocados en la Agenda 2030</p>
+    </div>
+    <div class="hoja-inner">
+      <div class="seccion">¿QUIÉNES SOMOS?</div>
+      <p><b>Fundación ilmhon: Creando Conciencia.</b> Asociación civil sin fines de lucro, en Atizapán de Zaragoza, Estado de México, comprometida con la creación de conciencia.</p>
+      <div class="seccion naranja">VISIÓN:</div>
+      <p>Aspiramos a ser la fuerza transformadora que inspira cambios positivos, creando un tejido social sólido, con acompañamiento espiritual, donde cada persona encuentre apoyo, desarrollo y motivación.</p>
+      <div class="seccion verde">MISIÓN:</div>
+      <p>Rescatar valores y brindar esperanza a quienes enfrentan vulnerabilidad, con programas asistenciales y alianzas estratégicas, para un futuro digno: apoyo a adultos mayores, acompañamiento a estudiantes y reinserción social.</p>
+      <div class="seccion">PROGRAMAS:</div>
+      <div class="programa"><b>ILUMINA:</b> Pláticas, talleres de salud mental y conferencias.</div>
+      <div class="programa"><b>MUEVE:</b> Actividades físicas y recreativas.</div>
+      <div class="programa"><b>HONRA TU VIDA:</b> Amor propio, sentido de vida y empatía.</div>
+    </div>
+    <div class="pie-hoja">Fundación ilmhon - Atizapán de Zaragoza, Edo. de México | 2026</div>
+  </div>
+
+  <!-- HOJA 2 - JÓVENES -->
+  <div class="hoja" id="jovenes">
+    <button class="cerrar" onclick="cerrar()">X</button>
+    <div class="cabecera-hoja">
+      <span class="anio">2026</span>
+      <h2>JÓVENES</h2>
+      <p>Creando Conciencia - Prevención y cuidado de la vida</p>
+    </div>
+    <div class="hoja-inner">
+      <div class="seccion verde-claro">PROGRAMA DE EDUCACIÓN</div>
+      <p>Para 2030, los jóvenes enfrentarán un mercado laboral transformado por la IA y la automatización. Les enseñamos a gestionar sus emociones, a crear confianza, a decir NO, a prevenir riesgos y adicciones, y a identificar sus fortalezas.</p>
+
+      <!-- SECUNDARIA -->
+      <div class="seccion verde-claro">SECUNDARIAS · 12 A 15 AÑOS</div>
+      <p>De 12 a 15 años, los jóvenes están construyendo su identidad. Necesitan un espacio seguro para expresarse, conocerse y fortalecerse.</p>
+      <p><b>Objetivo:</b> Que descubran sus fortalezas, reconozcan su valor y aprendan a gestionar lo que sienten y piensan.</p>
+      <p>Para 2030 enfrentarán grandes cambios. Por eso trabajamos: responsabilidad, compromiso, inteligencia emocional, pensamiento crítico, creatividad y valores humanos.</p>
+      <ul class="lista">
+        <li><b>Taller:</b> ¿Qué siento? Manejo de emociones.</li>
+        <li><b>Conferencia:</b> No estás solo. Prevención del bullying y del suicidio.</li>
+      </ul>
+      <div class="seccion verde-claro">TEMAS DEL CURSO</div>
+      <ul class="lista">
+        <li><b>1.</b> Espacio seguro: ¿Quién soy y por qué estoy aquí?</li>
+        <li><b>2.</b> Reconociendo mis emociones</li>
+        <li><b>3.</b> El enojo: entenderlo y expresarlo sin frustración</li>
+        <li><b>4.</b> Pensamientos que ayudan y que bloquean</li>
+        <li><b>5.</b> Frustración: cuando las cosas no salen como quiero</li>
+        <li><b>6.</b> Autoestima: reconocer mi valor</li>
+        <li><b>7.</b> Mi energía y mi cuerpo</li>
+        <li><b>8.</b> Comunicación: decir lo que siento sin pelear. Manejo de conflictos</li>
+        <li><b>9.</b> Mis emociones en casa y con amigos</li>
+        <li><b>10.</b> Mis sueños y mi proyecto personal</li>
+        <li><b>11.</b> Cierre: ¿Qué me llevo?</li>
+      </ul>
+
+      <!-- PREPARATORIA -->
+      <div class="seccion verde-claro">PREPARATORIAS · 16 A 18 AÑOS</div>
+      <p>De 16 a 18 años, los jóvenes ya no son niños, pero todavía no son adultos. Tienen que decidir carrera, manejar la presión de la escuela, las redes sociales, las relaciones y su futuro.</p>
+      <p><b>Objetivo:</b> Que aprendan a calmar su mente, a hablar lo que sienten sin miedo, a poner límites y a armar su proyecto de vida con confianza.</p>
+      <p>Para 2030 enfrentarán carreras nuevas, más competencia y mucha información. Por eso trabajamos: salud mental, autoconfianza, toma de decisiones, comunicación y proyecto de vida.</p>
+      <ul class="lista">
+        <li><b>Taller:</b> Mente en calma. Ansiedad y depresión.</li>
+        <li><b>Conferencia:</b> Si se siente feo, se habla.</li>
+        <li><b>Taller:</b> ¿Y después de la escuela, qué? Proyecto de vida.</li>
+      </ul>
+      <div class="seccion verde-claro">TEMAS DEL CURSO</div>
+      <ul class="lista">
+        <li><b>1.</b> Espacio seguro: aquí sí se puede hablar</li>
+        <li><b>2.</b> Mente en calma: ¿qué es la ansiedad y cómo se siente?</li>
+        <li><b>3.</b> Si se siente feo, se habla: pedir ayuda no es debilidad</li>
+        <li><b>4.</b> Pensamientos que me sabotean y cómo cambiarlos</li>
+        <li><b>5.</b> Presión social, redes sociales y comparación</li>
+        <li><b>6.</b> Autoestima y amor propio: reconocer mi valor</li>
+        <li><b>7.</b> Decir NO: límites, presión de pareja y de amigos</li>
+        <li><b>8.</b> Manejo de conflictos: hablar sin pelear</li>
+        <li><b>9.</b> ¿Y después de la escuela, qué? Mi proyecto de vida</li>
+        <li><b>10.</b> Cierre: ¿Qué me llevo y qué quiero cambiar?</li>
+      </ul>
+
+      <!-- UNIVERSIDADES - SIN ¿QUÉ TRABAJAMOS? -->
+      <div class="seccion verde-claro">UNIVERSIDADES · 18 A 25 AÑOS</div>
+      <p>Programa <b>Ilumina y Mueve para Jóvenes</b>, para motivar e impulsar a jóvenes egresados de universidades públicas y privadas.</p>
+      <p><b>Objetivo:</b> Que identifiquen sus fortalezas, talentos y habilidades, proyecten confianza en su vida profesional y superen miedos, el rechazo y la baja autoestima, con claridad en su camino.</p>
+      <p>Para 2030, los recién egresados enfrentarán un mercado laboral transformado por la IA, la automatización y la sostenibilidad. Eso exigirá adaptación rápida y habilidades más allá de su formación técnica.</p>
+      <p>Por eso educamos en:</p>
+      <ul class="lista">
+        <li>Liderazgo e influencia social</li>
+        <li>Objetivos de Desarrollo Sostenible</li>
+        <li>Pensamiento crítico y creativo</li>
+        <li>Competencias tecnológicas</li>
+        <li>Responsabilidad</li>
+        <li>Compromiso</li>
+        <li>Inteligencia emocional</li>
+        <li>Valores humanos</li>
+      </ul>
+
+    </div>
+    <div class="pie-hoja">Fundación ilmhon - Atizapán de Zaragoza, Edo. de México | 2026</div>
+  </div>
+
+  <!-- HOJA 3 - ADULTOS MAYORES -->
+  <div class="hoja" id="am">
+    <button class="cerrar" onclick="cerrar()">X</button>
+    <div class="cabecera-hoja">
+      <span class="anio">2026</span>
+      <h2>ADULTOS MAYORES</h2>
+      <p>Honra tu vida: tu historia importa</p>
+    </div>
+    <div class="hoja-inner">
+      <div class="dato">Para 2030, 2 de cada 10 habitantes en la CDMX tendrán más de 60 años.</div>
+      <p>Trabajamos por un envejecimiento activo, saludable, digno y acompañado.</p>
+      <div class="seccion naranja">¿QUÉ HACEMOS?</div>
+      <ul class="lista">
+        <li>Visitas a casas de adultos mayores</li>
+        <li>Conferencias de bienestar integral</li>
+        <li>Alimentación</li>
+        <li>Recetas saludables</li>
+        <li>Ejercicios en silla de acuerdo a la edad</li>
+        <li>Cuidados paliativos</li>
+        <li>Destreza mental</li>
+      </ul>
+    </div>
+    <div class="pie-hoja">Fundación ilmhon - Atizapán de Zaragoza, Edo. de México | 2026</div>
+  </div>
+
+  <!-- HOJA 4 - ACCIONES - COLLAGE LIBRE MOODBOARD -->
+  <div class="hoja" id="acciones">
+    <button class="cerrar" onclick="cerrar()">X</button>
+    <div class="hoja-inner">
+      <div class="collage-libre">
+        <div class="foto f1" onclick="abrirFoto('img/accion.jpg')"><img src="img/accion.jpg"></div>
+        <div class="foto f2" onclick="abrirFoto('img/accion2.jpg')"><img src="img/accion2.jpg"></div>
+        <div class="foto f3" onclick="abrirFoto('img/accion3.jpg')"><img src="img/accion3.jpg"></div>
+        <div class="foto f4" onclick="abrirFoto('img/accion4.jpg')"><img src="img/accion4.jpg"></div>
+        <div class="foto f5" onclick="abrirFoto('img/accion5.jpg')"><img src="img/accion5.jpg"></div>
+        <div class="foto f6" onclick="abrirFoto('img/accion6.jpg')"><img src="img/accion6.jpg"></div>
+        <div class="foto f7" onclick="abrirFoto('img/accion7.jpg')"><img src="img/accion7.jpg"></div>
+        <div class="foto f8" onclick="abrirFoto('img/accion8.jpg')"><img src="img/accion8.jpg"></div>
+        <div class="foto f9" onclick="abrirFoto('img/accion9.jpg')"><img src="img/accion9.jpg"></div>
+        <div class="foto f10" onclick="abrirFoto('img/accion10.jpg')"><img src="img/accion10.jpg"></div>
+        <div class="foto f11" onclick="abrirFoto('img/accion11.jpg')"><img src="img/accion11.jpg"></div>
+        <div class="foto f12" onclick="abrirFoto('img/accion12.jpg')"><img src="img/accion12.jpg"></div>
+        <div class="foto f13" onclick="abrirFoto('img/accion13.jpg')"><img src="img/accion13.jpg"></div>
+        <div class="foto f14" onclick="abrirFoto('img/accion14.jpg')"><img src="img/accion14.jpg"></div>
+        <div class="foto f15" onclick="abrirFoto('img/accion15.jpg')"><img src="img/accion15.jpg"></div>
+        <div class="foto f16" onclick="abrirFoto('img/accion16.jpg')"><img src="img/accion16.jpg"></div>
+        <div class="foto f17" onclick="abrirFoto('img/accion17.jpg')"><img src="img/accion17.jpg"></div>
+        <div class="foto f18" onclick="abrirFoto('img/accion18.jpg')"><img src="img/accion18.jpg"></div>
+        <div class="foto f19" onclick="abrirFoto('img/accion19.jpg')"><img src="img/accion19.jpg"></div>
+        <div class="foto f20" onclick="abrirFoto('img/accion20.jpg')"><img src="img/accion20.jpg"></div>
+        <div class="foto f21" onclick="abrirFoto('img/accion21.jpg')"><img src="img/accion21.jpg"></div>
+        <div class="foto f22" onclick="abrirFoto('img/accion22.jpg')"><img src="img/accion22.jpg"></div>
+        <div class="foto f23" onclick="abrirFoto('img/accion23.jpg')"><img src="img/accion23.jpg"></div>
+        <div class="foto f24" onclick="abrirFoto('img/accion24.jpg')"><img src="img/accion24.jpg"></div>
+        <div class="foto f25" onclick="abrirFoto('img/accion25.jpg')"><img src="img/accion25.jpg"></div>
+        <div class="foto f26" onclick="abrirFoto('img/accion26.jpg')"><img src="img/accion26.jpg"></div>
+        <div class="foto f27" onclick="abrirFoto('img/accion27.jpg')"><img src="img/accion27.jpg"></div>
+        <div class="foto f28" onclick="abrirFoto('img/accion28.jpg')"><img src="img/accion28.jpg"></div>
+        <div class="foto f29" onclick="abrirFoto('img/accion29.jpg')"><img src="img/accion29.jpg"></div>
+        <div class="foto f30" onclick="abrirFoto('img/accion30.jpg')"><img src="img/accion30.jpg"></div>
+        <div class="foto f31" onclick="abrirFoto('img/accion31.jpg')"><img src="img/accion31.jpg"></div>
+        <div class="foto f32" onclick="abrirFoto('img/accion32.jpg')"><img src="img/accion32.jpg"></div>
+        <div class="foto f33" onclick="abrirFoto('img/accion33.jpg')"><img src="img/accion33.jpg"></div>
+        <div class="foto f34" onclick="abrirFoto('img/accion34.jpg')"><img src="img/accion34.jpg"></div>
+        <div class="foto f35" onclick="abrirFoto('img/accion35.jpg')"><img src="img/accion35.jpg"></div>
+        <div class="foto f36" onclick="abrirFoto('img/accion36.jpg')"><img src="img/accion36.jpg"></div>
+        <div class="foto f37" onclick="abrirFoto('img/accion37.jpg')"><img src="img/accion37.jpg"></div>
+        <div class="foto f38" onclick="abrirFoto('img/accion38.jpg')"><img src="img/accion38.jpg"></div>
+        <div class="foto f39" onclick="abrirFoto('img/accion39.jpg')"><img src="img/accion39.jpg"></div>
+        <div class="foto f40" onclick="abrirFoto('img/accion40.jpg')"><img src="img/accion40.jpg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOJA 5 - VOLUNTARIADO -->
+  <div class="hoja" id="voluntariado">
+    <button class="cerrar" onclick="cerrar()">X</button>
+    <div class="cabecera-hoja">
+      <span class="anio">2026</span>
+      <h2>VOLUNTARIADO</h2>
+      <p>Súmate: tu tiempo también ilumina vidas</p>
+    </div>
+    <div class="hoja-inner">
+      <div class="seccion">¿QUIERES SER VOLUNTARIO?</div>
+      <p>Súmate a Fundación ilmhon y acompaña a adultos mayores, jóvenes y comunidad con tu tiempo, tu talento y tu corazón.</p>
+      <a class="btn-watsap" href="https://wa.me/525539818090?text=Hola%20Fundaci%C3%B3n%20ilmhon%2C%20quiero%20ser%20voluntario" target="_blank">💬 Mándanos WhatsApp</a>
+      <div class="dato">¡Gracias por querer ayudar!</div>
+    </div>
+    <div class="pie-hoja">Fundación ilmhon - Atizapán de Zaragoza, Edo. de México | 2026</div>
+  </div>
+
+</div>
+
+<!-- FOTO EN GRANDE -->
+<div class="lightbox" id="lightbox" onclick="cerrarFoto()">
+  <span class="cerrar-foto">X</span>
+  <img id="fotoGrande" src="">
+</div>
+
+<script>
+  function abrir(id, el){
+    document.querySelectorAll('.hoja').forEach(h=>h.classList.remove('visible'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('activa'));
+    document.querySelectorAll('.tab-top').forEach(t=>t.classList.remove('activa'));
+    document.getElementById(id).classList.add('visible');
+    el.classList.add('activa');
+  }
+  function cerrar(){
+    document.querySelectorAll('.hoja').forEach(h=>h.classList.remove('visible'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('activa'));
+    document.querySelectorAll('.tab-top').forEach(t=>t.classList.remove('activa'));
+  }
+  function abrirFoto(src){
+    document.getElementById('fotoGrande').src = src;
+    document.getElementById('lightbox').classList.add('abierto');
+  }
+  function cerrarFoto(){
+    document.getElementById('lightbox').classList.remove('abierto');
+  }
+</script>
+</body>
+</html>
